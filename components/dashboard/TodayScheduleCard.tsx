@@ -49,6 +49,7 @@ export default function TodayScheduleCard({ initialDoses }: TodayScheduleCardPro
 
       if (res.success) {
         toast.success(`Dose marked as ${status}`);
+        window.dispatchEvent(new Event('dose-updated'));
       } else {
         throw new Error(res.message);
       }
