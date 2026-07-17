@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Card, CardBody, Button, Chip } from '@heroui/react';
+import { Card, CardContent, Button, Chip } from '@heroui/react';
 import { fetchClient } from '@/lib/api';
 import toast from 'react-hot-toast';
 import { format, isPast, differenceInMinutes, parseISO } from 'date-fns';
@@ -19,6 +19,7 @@ export interface Dose {
 
 interface TodayScheduleCardProps {
   initialDoses: Dose[];
+  readOnly?: boolean;
 }
 
 type TimeOfDay = 'Morning' | 'Afternoon' | 'Evening' | 'Night';
@@ -32,7 +33,7 @@ const getTimeOfDay = (dateStr: string): TimeOfDay => {
   return 'Night';
 };
 
-export default function TodayScheduleCard({ initialDoses }: TodayScheduleCardProps) {
+export default function TodayScheduleCard({ initialDoses, readOnly = false }: TodayScheduleCardProps) {
   const [doses, setDoses] = useState<Dose[]>(initialDoses);
 
   const handleUpdateStatus = async (id: string, status: 'taken' | 'skipped') => {
@@ -93,7 +94,7 @@ export default function TodayScheduleCard({ initialDoses }: TodayScheduleCardPro
                   isOverdue ? 'border-l-4 border-l-danger-500 border-default-200' : 'border-default-200'
                 }`}
               >
-                <CardBody className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <CardContent className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div className="flex flex-col">
                     <div className="flex items-center gap-2">
                       <span className="font-semibold text-slate-900 dark:text-slate-100 text-lg">
@@ -114,24 +115,30 @@ export default function TodayScheduleCard({ initialDoses }: TodayScheduleCardPro
 
                   <div className="flex items-center gap-2 self-end sm:self-auto">
                     {dose.status === 'pending' ? (
-                      <>
-                        <Button 
-                          size="sm" 
-                          variant="flat" 
-                          className="bg-slate-200 text-slate-700 font-medium"
-                          onPress={() => handleUpdateStatus(dose._id, 'skipped')}
-                        >
-                          Skip
-                        </Button>
-                        <Button 
-                          size="sm" 
-                          color="success" 
-                          className="font-medium text-white"
-                          onPress={() => handleUpdateStatus(dose._id, 'taken')}
-                        >
-                          Mark Taken
-                        </Button>
-                      </>
+                      readOnly ? (
+                        <Chip size="sm" variant="flat" className="bg-slate-100 text-slate-500">
+                          Pending
+                        </Chip>
+                      ) : (
+                        <>
+                          <Button 
+                            size="sm" 
+                            variant="flat" 
+                            className="bg-slate-200 text-slate-700 font-medium"
+                            onPress={() => handleUpdateStatus(dose._id, 'skipped')}
+                          >
+                            Skip
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            color="success" 
+                            className="font-medium text-white"
+                            onPress={() => handleUpdateStatus(dose._id, 'taken')}
+                          >
+                            Mark Taken
+                          </Button>
+                        </>
+                      )
                     ) : (
                       <Chip 
                         color={
@@ -145,7 +152,7 @@ export default function TodayScheduleCard({ initialDoses }: TodayScheduleCardPro
                       </Chip>
                     )}
                   </div>
-                </CardBody>
+                </CardContent>
               </Card>
             );
           })}
@@ -157,9 +164,9 @@ export default function TodayScheduleCard({ initialDoses }: TodayScheduleCardPro
   if (doses.length === 0) {
     return (
       <Card className="shadow-sm border border-default-200 bg-white/50 dark:bg-default-100/50">
-        <CardBody className="p-8 text-center text-slate-500">
+        <CardContent className="p-8 text-center text-slate-500">
           No doses scheduled for today.
-        </CardBody>
+        </CardContent>
       </Card>
     );
   }

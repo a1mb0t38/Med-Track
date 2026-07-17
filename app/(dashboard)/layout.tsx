@@ -3,6 +3,7 @@ import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import NotificationManager from '@/components/NotificationManager';
+import Header from '@/components/dashboard/Header';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -18,9 +19,12 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col">
+      <Header user={session.user as any} />
       <NotificationManager />
-      {children}
+      <main className="flex-grow">
+        {children}
+      </main>
     </div>
   );
 }

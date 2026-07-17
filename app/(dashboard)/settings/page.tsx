@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Card, CardBody, Switch } from '@heroui/react';
+import { Card, CardContent, Switch } from '@heroui/react';
 import { requestNotificationPermission } from '@/lib/notifications';
 import toast from 'react-hot-toast';
 
@@ -54,7 +54,7 @@ export default function SettingsPage() {
       </div>
 
       <Card className="shadow-sm">
-        <CardBody className="p-6">
+        <CardContent className="p-6">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
               <h3 className="text-lg font-semibold text-slate-700 dark:text-slate-200">
@@ -75,7 +75,7 @@ export default function SettingsPage() {
               color="primary"
             />
           </div>
-        </CardBody>
+        </CardContent>
       </Card>
     </div>
   );

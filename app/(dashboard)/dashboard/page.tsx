@@ -3,13 +3,32 @@ import { fetchServer } from '@/lib/api';
 import TodayScheduleCard from '@/components/dashboard/TodayScheduleCard';
 import RefillAlertBanner from '@/components/dashboard/RefillAlertBanner';
 import AddMedicineButton from '@/components/dashboard/AddMedicineButton';
+import InviteBanner from '@/components/dashboard/InviteBanner';
 import { Dose } from '@/components/dashboard/TodayScheduleCard';
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
+import { redirect } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
 
 export default async function DashboardPage() {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    redirect('/login');
+  }
+
+  // Redirect caregivers to their dedicated dashboard
+  if (session.user.role === 'caregiver') {
+    redirect('/caregiver');
+  }
+
   let doses: Dose[] = [];
+  let invites = [];
+
   try {
     const res = await fetchServer('/doses/today', { cache: 'no-store' });
     if (res.success && Array.isArray(res.data)) {
@@ -19,8 +38,19 @@ export default async function DashboardPage() {
     console.error('Failed to fetch today doses:', error);
   }
 
+  try {
+    const res = await fetchServer('/links/invites', { cache: 'no-store' });
+    if (res.success && Array.isArray(res.data)) {
+      invites = res.data;
+    }
+  } catch (error) {
+    console.error('Failed to fetch pending invites:', error);
+  }
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
+      <InviteBanner initialInvites={invites} />
+
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
         <div>
           <h1 className="text-3xl font-bold text-slate-800 dark:text-slate-100">My Dashboard</h1>

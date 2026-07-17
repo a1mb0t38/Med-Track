@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Card, CardBody, Button, Chip } from '@heroui/react';
+import { Card, CardContent, Button, Chip } from '@heroui/react';
 import { 
   BarChart, 
   Bar, 
@@ -36,7 +36,7 @@ interface DoseHistoryItem {
 
 type RangeOption = 7 | 30 | 90;
 
-export default function AdherenceDashboard() {
+export default function AdherenceDashboard({ patientId }: { patientId?: string } = {}) {
   const [range, setRange] = useState<RangeOption>(30);
   const [aggregation, setAggregation] = useState<AggregationData[]>([]);
   const [history, setHistory] = useState<DoseHistoryItem[]>([]);
@@ -51,25 +51,35 @@ export default function AdherenceDashboard() {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const endDate = new Date();
-        const startDate = subDays(endDate, range);
-        
-        const qParams = `?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`;
+        if (patientId) {
+          // Caregiver fetches patient details (today + 30d adherence) in one call
+          const res = await fetchClient(`/links/patients/${patientId}/doses`);
+          if (res.success && res.data) {
+            const sortedAgg = (res.data.adherenceHistory as AggregationData[]).sort((a, b) => a._id.localeCompare(b._id));
+            setAggregation(sortedAgg);
+            calculateStats(sortedAgg);
+            setHistory([]);
+          }
+        } else {
+          const endDate = new Date();
+          const startDate = subDays(endDate, range);
+          
+          const qParams = `?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`;
 
-        // Fetch Aggregation
-        const aggRes = await fetchClient(`/doses/adherence${qParams}`);
-        if (aggRes.success) {
-          const sortedAgg = (aggRes.data as AggregationData[]).sort((a, b) => a._id.localeCompare(b._id));
-          setAggregation(sortedAgg);
-          calculateStats(sortedAgg);
+          // Fetch Aggregation
+          const aggRes = await fetchClient(`/doses/adherence${qParams}`);
+          if (aggRes.success) {
+            const sortedAgg = (aggRes.data as AggregationData[]).sort((a, b) => a._id.localeCompare(b._id));
+            setAggregation(sortedAgg);
+            calculateStats(sortedAgg);
+          }
+
+          // Fetch Detail History
+          const histRes = await fetchClient(`/doses/history${qParams}`);
+          if (histRes.success) {
+            setHistory(histRes.data);
+          }
         }
-
-        // Fetch Detail History
-        const histRes = await fetchClient(`/doses/history${qParams}`);
-        if (histRes.success) {
-          setHistory(histRes.data);
-        }
-
       } catch (error) {
         console.error('Error fetching adherence data:', error);
       } finally {
@@ -78,13 +88,12 @@ export default function AdherenceDashboard() {
     };
 
     fetchData();
-  }, [range]);
+  }, [range, patientId]);
 
   const calculateStats = (data: AggregationData[]) => {
     let takenCount = 0;
     let resolvableTotal = 0;
     let streak = 0;
-    let streakBroken = false;
 
     // Calculate overall stats
     data.forEach(day => {
@@ -124,48 +133,50 @@ export default function AdherenceDashboard() {
   return (
     <div className="flex flex-col gap-8">
       {/* Date Range Selector */}
-      <div className="flex gap-2 bg-slate-100 dark:bg-slate-800 p-1 rounded-lg w-max">
-        {[7, 30, 90].map(r => (
-          <Button
-            key={r}
-            size="sm"
-            variant={range === r ? 'solid' : 'light'}
-            color={range === r ? 'primary' : 'default'}
-            onPress={() => setRange(r as RangeOption)}
-            className="font-medium"
-          >
-            Last {r} Days
-          </Button>
-        ))}
-      </div>
+      {!patientId && (
+        <div className="flex gap-2 bg-slate-100 dark:bg-slate-800 p-1 rounded-lg w-max">
+          {[7, 30, 90].map(r => (
+            <Button
+              key={r}
+              size="sm"
+              variant={range === r ? 'solid' : 'light'}
+              color={range === r ? 'primary' : 'default'}
+              onPress={() => setRange(r as RangeOption)}
+              className="font-medium"
+            >
+              Last {r} Days
+            </Button>
+          ))}
+        </div>
+      )}
 
       {/* Stats row */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card className="shadow-sm">
-          <CardBody className="p-6 flex flex-col items-center justify-center">
+          <CardContent className="p-6 flex flex-col items-center justify-center">
             <p className="text-slate-500 text-sm font-medium">Adherence Rate</p>
             <p className="text-3xl font-bold text-primary mt-2">{adherenceRate}%</p>
-          </CardBody>
+          </CardContent>
         </Card>
         <Card className="shadow-sm">
-          <CardBody className="p-6 flex flex-col items-center justify-center">
+          <CardContent className="p-6 flex flex-col items-center justify-center">
             <p className="text-slate-500 text-sm font-medium">Current Streak</p>
             <p className="text-3xl font-bold text-success mt-2">{currentStreak} days</p>
-          </CardBody>
+          </CardContent>
         </Card>
         <Card className="shadow-sm">
-          <CardBody className="p-6 flex flex-col items-center justify-center">
+          <CardContent className="p-6 flex flex-col items-center justify-center">
             <p className="text-slate-500 text-sm font-medium">Total Doses Logged</p>
             <p className="text-3xl font-bold text-slate-700 dark:text-slate-200 mt-2">{totalLogged}</p>
-          </CardBody>
+          </CardContent>
         </Card>
       </div>
 
       {/* Chart */}
       <Card className="shadow-sm">
-        <CardBody className="p-6">
+        <CardContent className="p-6">
           <h3 className="text-lg font-semibold text-slate-700 dark:text-slate-200 mb-6">
-            Adherence Chart
+            Adherence Chart {patientId && <span className="text-sm font-normal text-slate-400 dark:text-slate-500">(Last 30 Days)</span>}
           </h3>
           {isLoading ? (
             <div className="h-64 flex items-center justify-center text-slate-400">Loading chart...</div>
@@ -201,45 +212,47 @@ export default function AdherenceDashboard() {
               </ResponsiveContainer>
             </div>
           )}
-        </CardBody>
+        </CardContent>
       </Card>
 
       {/* History List */}
-      <Card className="shadow-sm">
-        <CardBody className="p-6">
-          <h3 className="text-lg font-semibold text-slate-700 dark:text-slate-200 mb-4">
-            Detailed Log
-          </h3>
-          {isLoading ? (
-            <p className="text-slate-400">Loading history...</p>
-          ) : history.length === 0 ? (
-            <p className="text-slate-400">No dose logs found for this period.</p>
-          ) : (
-            <div className="flex flex-col gap-3">
-              {history.map((log) => (
-                <div key={log._id} className="flex flex-row items-center justify-between p-3 border border-slate-100 dark:border-slate-800 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                  <div className="flex flex-col">
-                    <span className="font-medium text-slate-800 dark:text-slate-200">
-                      {log.medicineId.name} <span className="text-slate-400 text-sm font-normal ml-1">({log.medicineId.dosage})</span>
-                    </span>
-                    <span className="text-xs text-slate-500 mt-1">
-                      {format(parseISO(log.scheduledTime), 'MMM d, yyyy \u2022 h:mm a')}
-                    </span>
+      {!patientId && (
+        <Card className="shadow-sm">
+          <CardContent className="p-6">
+            <h3 className="text-lg font-semibold text-slate-700 dark:text-slate-200 mb-4">
+              Detailed Log
+            </h3>
+            {isLoading ? (
+              <p className="text-slate-400">Loading history...</p>
+            ) : history.length === 0 ? (
+              <p className="text-slate-400">No dose logs found for this period.</p>
+            ) : (
+              <div className="flex flex-col gap-3">
+                {history.map((log) => (
+                  <div key={log._id} className="flex flex-row items-center justify-between p-3 border border-slate-100 dark:border-slate-800 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                    <div className="flex flex-col">
+                      <span className="font-medium text-slate-800 dark:text-slate-200">
+                        {log.medicineId.name} <span className="text-slate-400 text-sm font-normal ml-1">({log.medicineId.dosage})</span>
+                      </span>
+                      <span className="text-xs text-slate-500 mt-1">
+                        {format(parseISO(log.scheduledTime), 'MMM d, yyyy \u2022 h:mm a')}
+                      </span>
+                    </div>
+                    <Chip 
+                      size="sm" 
+                      color={getStatusColor(log.status)} 
+                      variant="flat"
+                      className="capitalize"
+                    >
+                      {log.status}
+                    </Chip>
                   </div>
-                  <Chip 
-                    size="sm" 
-                    color={getStatusColor(log.status)} 
-                    variant="flat"
-                    className="capitalize"
-                  >
-                    {log.status}
-                  </Chip>
-                </div>
-              ))}
-            </div>
-          )}
-        </CardBody>
-      </Card>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Card, CardHeader, CardBody, Input, Button } from '@heroui/react';
+import { Card, CardHeader, CardContent, Input, Button } from '@heroui/react';
 import { authClient } from '@/lib/auth-client';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
@@ -44,7 +44,7 @@ export default function LoginPage() {
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Welcome Back</h1>
           <p className="text-sm text-gray-500">Sign in to your MedTrack account</p>
         </CardHeader>
-        <CardBody className="p-8">
+        <CardContent className="p-8">
           <form onSubmit={handleLogin} className="flex flex-col gap-4">
             <Input
               type="email"
@@ -79,7 +79,7 @@ export default function LoginPage() {
               Sign Up
             </a>
           </div>
-        </CardBody>
+        </CardContent>
       </Card>
     </div>
   );

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Card, CardBody, Button } from '@heroui/react';
+import { Card, CardContent, Button } from '@heroui/react';
 import { fetchClient } from '@/lib/api';
 
 interface Medicine {
@@ -42,7 +42,7 @@ export default function RefillAlertBanner() {
 
   return (
     <Card className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 mb-6 shadow-sm">
-      <CardBody className="py-3 px-4 flex flex-row items-center justify-between">
+      <CardContent className="py-3 px-4 flex flex-row items-center justify-between">
         <div className="flex flex-col">
           <p className="text-amber-800 dark:text-amber-300 font-semibold text-sm">
             Refill Reminder
@@ -63,7 +63,7 @@ export default function RefillAlertBanner() {
         >
           Dismiss
         </Button>
-      </CardBody>
+      </CardContent>
     </Card>
   );
 }
