@@ -1,5 +1,5 @@
 import React from 'react';
-import { fetchServer } from '@/lib/api';
+import { fetchServer } from '@/lib/api-server';
 import TodayScheduleCard from '@/components/dashboard/TodayScheduleCard';
 import RefillAlertBanner from '@/components/dashboard/RefillAlertBanner';
 import AddMedicineButton from '@/components/dashboard/AddMedicineButton';

@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Button } from '@heroui/react';
 import { authClient } from '@/lib/auth-client';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
@@ -26,6 +25,7 @@ export default function Header({ user }: HeaderProps) {
           onSuccess: () => {
             toast.success('Logged out successfully');
             router.push('/login');
+            router.refresh();
           }
         }
       });
@@ -35,16 +35,16 @@ export default function Header({ user }: HeaderProps) {
     }
   };
 
-  const navItems = user.role === 'caregiver' 
+  const navItems = user.role === 'caregiver'
     ? [
-        { label: 'Patients', href: '/caregiver' },
-        { label: 'Settings', href: '/settings' }
-      ]
+      { label: 'Patients', href: '/caregiver' },
+      { label: 'Settings', href: '/settings' }
+    ]
     : [
-        { label: 'Dashboard', href: '/dashboard' },
-        { label: 'History', href: '/history' },
-        { label: 'Settings', href: '/settings' }
-      ];
+      { label: 'Dashboard', href: '/dashboard' },
+      { label: 'History', href: '/history' },
+      { label: 'Settings', href: '/settings' }
+    ];
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md">
@@ -62,11 +62,10 @@ export default function Header({ user }: HeaderProps) {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    isActive
-                      ? 'text-primary-600 bg-primary-50 dark:bg-primary-950/30'
-                      : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-900/50'
-                  }`}
+                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${isActive
+                    ? 'text-primary-600 bg-primary-50 dark:bg-primary-950/30'
+                    : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-900/50'
+                    }`}
                 >
                   {item.label}
                 </Link>
@@ -80,15 +79,12 @@ export default function Header({ user }: HeaderProps) {
             <span className="text-sm font-semibold text-slate-800 dark:text-slate-200">{user.name}</span>
             <span className="text-xs text-slate-400 capitalize">{user.role}</span>
           </div>
-          <Button
-            size="sm"
-            variant="flat"
-            color="danger"
-            onPress={handleSignOut}
-            className="font-medium"
+          <button
+            onClick={handleSignOut}
+            className="text-sm font-medium text-danger-600 hover:text-danger-700 dark:text-danger-400 dark:hover:text-danger-300 cursor-pointer transition-colors px-3 py-1.5 rounded-lg hover:bg-danger-50 dark:hover:bg-danger-950/30"
           >
             Sign Out
-          </Button>
+          </button>
         </div>
       </div>
       {/* Mobile nav for small screens */}
@@ -99,11 +95,10 @@ export default function Header({ user }: HeaderProps) {
             <Link
               key={item.href}
               href={item.href}
-              className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
-                isActive
-                  ? 'text-primary-600 bg-primary-50 dark:bg-primary-950/30'
-                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900/50'
-              }`}
+              className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${isActive
+                ? 'text-primary-600 bg-primary-50 dark:bg-primary-950/30'
+                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900/50'
+                }`}
             >
               {item.label}
             </Link>

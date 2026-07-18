@@ -19,7 +19,9 @@ if (process.env.NODE_ENV === 'development') {
   client = new MongoClient(uri);
 }
 
-const db = client.db();
+// Explicitly name the database so it doesn't silently fall back to "test"
+// if the connection string URI has no db name in its path.
+const db = client.db('medtrack');
 
 export const auth = betterAuth({
   database: mongodbAdapter(db, {
@@ -38,6 +40,6 @@ export const auth = betterAuth({
       },
     },
   },
-  // Ensure the base URL is configured properly
   baseURL: process.env.BETTER_AUTH_URL || 'http://localhost:3000',
+  secret: process.env.BETTER_AUTH_SECRET,
 });
