@@ -65,7 +65,7 @@ export default function SignupPage() {
           <div className="px-8 pt-8 pb-10">
             <div className="text-center mb-8">
               <span className="text-3xl font-black bg-gradient-to-r from-primary-600 to-primary-400 bg-clip-text text-transparent tracking-tight">
-                <Link href="/">MediCare Tracker</Link>
+                <Link href="/">MedTrack</Link>
               </span>
               <p className="mt-2 text-sm text-neutral-500">
                 Manage your medications or monitor your family's health.

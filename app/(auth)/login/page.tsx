@@ -49,7 +49,7 @@ export default function LoginPage() {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
   const handleDemoFill = () => {
-    setEmail('demo@preppilot.com');
+    setEmail('demo@medtrack.com');
     setPassword('Demo1234!');
     setErrors({});
   };
@@ -113,7 +113,7 @@ export default function LoginPage() {
             {/* Logo + title */}
             <div className="text-center mb-8">
               <span className="text-3xl font-black bg-gradient-to-r from-primary-600 to-primary-400 bg-clip-text text-transparent tracking-tight">
-                MedTrack
+                <Link href="/">MedTrack</Link>
               </span>
               <h1 className="mt-3 text-xl font-bold text-neutral-800 dark:text-neutral-100">
                 Welcome back
@@ -210,7 +210,7 @@ export default function LoginPage() {
                 Fill Demo Credentials
               </button>
               <p className="text-xs text-neutral-400 text-center mt-1.5">
-                demo@preppilot.com / Demo1234!
+                demo@medtrack.com / Demo1234!
               </p>
             </div>
 

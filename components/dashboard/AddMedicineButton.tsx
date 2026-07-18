@@ -5,6 +5,7 @@ import {
   Button,
   Modal,
   useOverlayState,
+  TextField,
   Input,
   TextArea,
   Switch,
@@ -99,10 +100,6 @@ export default function AddMedicineButton() {
         toast.success('Medicine added successfully');
         state.close();
         resetForm();
-
-        // Refresh server components to show the newly generated doses/refills
-        // Note: The backend cron needs to be run, or we wait till midnight.
-        // For testing, just refreshing the page state.
         router.refresh();
       } else {
         throw new Error(res.message);
@@ -122,51 +119,58 @@ export default function AddMedicineButton() {
 
       <Modal.Backdrop>
         <Modal.Container>
-          <Modal.Dialog className="max-w-2xl">
-            <form onSubmit={handleSubmit} className="flex flex-col">
+          <Modal.Dialog className="max-w-2xl max-h-[85vh] flex flex-col">
+            <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
               <Modal.Header>
                 <Modal.Heading>Add New Medicine</Modal.Heading>
               </Modal.Header>
 
-              <Modal.Body className="flex flex-col gap-4 max-h-[70vh] overflow-y-auto">
+              <Modal.Body className="flex flex-col gap-4 flex-1 min-h-0 overflow-y-auto">
 
                 <div className="flex gap-4">
-                  <Input
-                    label="Medicine Name"
-                    placeholder="e.g. Lisinopril"
+                  <TextField
+                    name="name"
+                    isRequired
                     value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    onChange={setName}
+                    className="flex-1 flex flex-col gap-1.5"
+                  >
+                    <Label>Medicine Name</Label>
+                    <Input placeholder="e.g. Lisinopril" />
+                  </TextField>
+
+                  <TextField
+                    name="dosage"
                     isRequired
-                    className="flex-1"
-                  />
-                  <Input
-                    label="Dosage"
-                    placeholder="e.g. 10mg"
                     value={dosage}
-                    onChange={(e) => setDosage(e.target.value)}
-                    isRequired
-                    className="flex-1"
-                  />
+                    onChange={setDosage}
+                    className="flex-1 flex flex-col gap-1.5"
+                  >
+                    <Label>Dosage</Label>
+                    <Input placeholder="e.g. 10mg" />
+                  </TextField>
                 </div>
 
-                <div className="flex gap-4 items-center">
-                  <Input
-                    type="number"
-                    label="Doses per day"
-                    min={1}
-                    value={frequencyPerDay.toString()}
-                    onChange={handleFrequencyChange}
-                    isRequired
-                    className="flex-1"
-                  />
-                  <Input
-                    type="number"
-                    label="Pills taken per dose"
-                    min={1}
-                    value={pillsPerDose.toString()}
-                    onChange={(e) => setPillsPerDose(parseInt(e.target.value) || 1)}
-                    className="flex-1"
-                  />
+                <div className="flex gap-4 items-start">
+                  <div className="flex-1 flex flex-col gap-1.5">
+                    <Label>Doses per day</Label>
+                    <Input
+                      type="number"
+                      min={1}
+                      value={frequencyPerDay.toString()}
+                      onChange={handleFrequencyChange}
+                      required
+                    />
+                  </div>
+                  <div className="flex-1 flex flex-col gap-1.5">
+                    <Label>Pills taken per dose</Label>
+                    <Input
+                      type="number"
+                      min={1}
+                      value={pillsPerDose.toString()}
+                      onChange={(e) => setPillsPerDose(parseInt(e.target.value) || 1)}
+                    />
+                  </div>
                 </div>
 
                 <div>
@@ -179,7 +183,7 @@ export default function AddMedicineButton() {
                         value={t}
                         onChange={(e) => handleTimeChange(idx, e.target.value)}
                         className="w-32"
-                        isRequired
+                        required
                         aria-label={`Time ${idx + 1}`}
                       />
                     ))}
@@ -187,22 +191,24 @@ export default function AddMedicineButton() {
                 </div>
 
                 <div className="flex gap-4">
-                  <Input
-                    type="number"
-                    label="Total Pills Remaining"
-                    min={0}
-                    value={pillsRemaining.toString()}
-                    onChange={(e) => setPillsRemaining(parseInt(e.target.value) || 0)}
-                    className="flex-1"
-                  />
-                  <Input
-                    type="number"
-                    label="Low Stock Alert Threshold"
-                    min={0}
-                    value={lowStockThreshold.toString()}
-                    onChange={(e) => setLowStockThreshold(parseInt(e.target.value) || 0)}
-                    className="flex-1"
-                  />
+                  <div className="flex-1 flex flex-col gap-1.5">
+                    <Label>Total Pills Remaining</Label>
+                    <Input
+                      type="number"
+                      min={0}
+                      value={pillsRemaining.toString()}
+                      onChange={(e) => setPillsRemaining(parseInt(e.target.value) || 0)}
+                    />
+                  </div>
+                  <div className="flex-1 flex flex-col gap-1.5">
+                    <Label>Low Stock Alert Threshold</Label>
+                    <Input
+                      type="number"
+                      min={0}
+                      value={lowStockThreshold.toString()}
+                      onChange={(e) => setLowStockThreshold(parseInt(e.target.value) || 0)}
+                    />
+                  </div>
                 </div>
 
                 <div className="flex items-center gap-4 py-2">
@@ -213,22 +219,25 @@ export default function AddMedicineButton() {
                     <Label>Ongoing Prescription</Label>
                   </Switch>
                   {!isOngoing && (
-                    <Input
-                      type="date"
-                      label="End Date"
-                      value={endDate}
-                      onChange={(e) => setEndDate(e.target.value)}
-                      className="flex-1"
-                    />
+                    <div className="flex-1 flex flex-col gap-1.5">
+                      <Label>End Date</Label>
+                      <Input
+                        type="date"
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
+                      />
+                    </div>
                   )}
                 </div>
 
-                <TextArea
-                  label="Instructions / Notes"
-                  placeholder="e.g. Take with food"
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                />
+                <div className="flex flex-col gap-1.5">
+                  <Label>Instructions / Notes</Label>
+                  <TextArea
+                    placeholder="e.g. Take with food"
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                  />
+                </div>
 
               </Modal.Body>
 
