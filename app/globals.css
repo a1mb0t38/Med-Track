@@ -3,27 +3,104 @@
 
 @source "../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* ─── MedTrack Design System ───────────────────────────────────────────────
+   All design tokens are defined here as @theme variables (Tailwind v4 CSS-first).
+   Every component should use these tokens — never raw color class names.
+   ──────────────────────────────────────────────────────────────────────── */
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  /* ── Fonts ── */
+  --font-sans: var(--font-inter), var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono);
+
+  /* ── Primary — Calm Medical Blue ── */
+  --color-primary:     #2563EB;
+  --color-primary-50:  #EFF6FF;
+  --color-primary-100: #DBEAFE;
+  --color-primary-200: #BFDBFE;
+  --color-primary-300: #93C5FD;
+  --color-primary-400: #60A5FA;
+  --color-primary-500: #3B82F6;
+  --color-primary-600: #2563EB;
+  --color-primary-700: #1D4ED8;
+  --color-primary-800: #1E40AF;
+  --color-primary-900: #1E3A8A;
+  --color-primary-950: #172554;
+
+  /* ── Accent — Soft Green for taken/success states ── */
+  --color-accent:     #16A34A;
+  --color-accent-50:  #F0FDF4;
+  --color-accent-100: #DCFCE7;
+  --color-accent-200: #BBF7D0;
+  --color-accent-300: #86EFAC;
+  --color-accent-400: #4ADE80;
+  --color-accent-500: #22C55E;
+  --color-accent-600: #16A34A;
+  --color-accent-700: #15803D;
+  --color-accent-800: #166534;
+  --color-accent-900: #14532D;
+  --color-accent-950: #052E16;
+
+  /* ── Warning — Warm Amber for refill/attention states (NOT red) ── */
+  --color-warning:     #D97706;
+  --color-warning-50:  #FFFBEB;
+  --color-warning-100: #FEF3C7;
+  --color-warning-200: #FDE68A;
+  --color-warning-300: #FCD34D;
+  --color-warning-400: #FBBF24;
+  --color-warning-500: #F59E0B;
+  --color-warning-600: #D97706;
+  --color-warning-700: #B45309;
+  --color-warning-800: #92400E;
+  --color-warning-900: #78350F;
+  --color-warning-950: #451A03;
+
+  /* ── Danger — Red, ONLY for critical missed-dose indicators ── */
+  --color-danger:     #DC2626;
+  --color-danger-50:  #FEF2F2;
+  --color-danger-100: #FEE2E2;
+  --color-danger-200: #FECACA;
+  --color-danger-500: #EF4444;
+  --color-danger-600: #DC2626;
+  --color-danger-900: #7F1D1D;
+  --color-danger-950: #450A0A;
+
+  /* ── Neutral Gray Scale — replaces all slate-* and gray-* usage ── */
+  --color-neutral-50:  #F8FAFC;
+  --color-neutral-100: #F1F5F9;
+  --color-neutral-200: #E2E8F0;
+  --color-neutral-300: #CBD5E1;
+  --color-neutral-400: #94A3B8;
+  --color-neutral-500: #64748B;
+  --color-neutral-600: #475569;
+  --color-neutral-700: #334155;
+  --color-neutral-800: #1E293B;
+  --color-neutral-900: #0F172A;
+  --color-neutral-950: #020617;
+
+  /* ── Background / Foreground ── */
+  --color-background: #F8FAFC;
+  --color-foreground: #1E293B;
+
+  /* ── Border Radius — ONE value, used everywhere ── */
+  --radius-card:  12px;
+  --radius-sm:     8px;
+  --radius-pill:  9999px;
 }
 
+/* ── Dark Mode Overrides ── */
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --color-background: #0F172A;
+    --color-foreground: #F1F5F9;
   }
 }
 
+/* ── Base Body ── */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }

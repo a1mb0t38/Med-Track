@@ -19,7 +19,7 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col">
+    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 flex flex-col">
       <Header user={session.user as any} />
       <NotificationManager />
       <main className="flex-grow">
