@@ -5,23 +5,23 @@ import RefillAlertBanner from '@/components/dashboard/RefillAlertBanner';
 import AddMedicineButton from '@/components/dashboard/AddMedicineButton';
 import InviteBanner from '@/components/dashboard/InviteBanner';
 import { Dose } from '@/components/dashboard/TodayScheduleCard';
-import { auth } from '@/lib/auth';
-import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
 
 export default async function DashboardPage() {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  if (!session) {
+  let session;
+  try {
+    session = await fetchServer('/user/profile');
+  } catch (error) {
     redirect('/login');
   }
 
-  // Redirect caregivers to their dedicated dashboard
+  if (!session?.success || !session?.user) {
+    redirect('/login');
+  }
+
   if (session.user.role === 'caregiver') {
     redirect('/caregiver');
   }
