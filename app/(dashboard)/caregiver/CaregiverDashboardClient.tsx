@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Card, CardContent, Input, Button, CardHeader } from '@heroui/react';
+import { Card, CardContent, TextField, Input, Label, Button, CardHeader } from '@heroui/react';
 import { fetchClient } from '@/lib/api';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
@@ -66,7 +66,7 @@ export default function CaregiverDashboardClient({
 
       if (res.success) {
         toast.success(res.message || 'Invitation sent successfully!');
-        
+
         // Append the new invite to list
         const newInvite: SentInviteLink = res.data;
         setInvites((prev) => [newInvite, ...prev]);
@@ -131,14 +131,17 @@ export default function CaregiverDashboardClient({
               Enter the email address of the patient you want to link. They will see a banner on their dashboard to accept.
             </p>
             <form onSubmit={handleInvite} className="flex flex-col gap-3">
-              <Input
+              <TextField
+                name="email"
                 type="email"
-                label="Patient Email"
-                placeholder="patient@example.com"
+                isRequired
                 value={email}
-                onValueChange={setEmail}
-                required
-              />
+                onChange={setEmail}
+                className="flex flex-col gap-1.5"
+              >
+                <Label>Patient Email</Label>
+                <Input placeholder="patient@example.com" />
+              </TextField>
               <Button
                 type="submit"
                 color="primary"
@@ -195,7 +198,7 @@ export default function CaregiverDashboardClient({
       {/* Linked Patients List */}
       <div>
         <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-6">Linked Patients</h2>
-        
+
         {patients.length === 0 ? (
           <Card className="border border-dashed border-slate-300 dark:border-slate-700 bg-slate-55/20 dark:bg-slate-900/10">
             <CardContent className="p-12 text-center text-slate-500">
@@ -206,13 +209,13 @@ export default function CaregiverDashboardClient({
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {patients.map((link) => {
               const { patientId: patient, todaySummary } = link;
-              const adherencePercentage = todaySummary.total > 0 
-                ? Math.round((todaySummary.taken / todaySummary.total) * 100) 
+              const adherencePercentage = todaySummary.total > 0
+                ? Math.round((todaySummary.taken / todaySummary.total) * 100)
                 : 0;
 
               return (
-                <Card 
-                  key={link._id} 
+                <Card
+                  key={link._id}
                   className="border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow"
                 >
                   <CardContent className="p-6 flex flex-col justify-between min-h-[180px]">
@@ -238,14 +241,13 @@ export default function CaregiverDashboardClient({
                         </p>
                         {todaySummary.total > 0 && (
                           <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 mt-2 overflow-hidden">
-                            <div 
-                              className={`h-full rounded-full transition-all duration-500 ${
-                                adherencePercentage === 100 
-                                  ? 'bg-success' 
-                                  : adherencePercentage > 50 
-                                  ? 'bg-primary' 
-                                  : 'bg-warning'
-                              }`} 
+                            <div
+                              className={`h-full rounded-full transition-all duration-500 ${adherencePercentage === 100
+                                  ? 'bg-success'
+                                  : adherencePercentage > 50
+                                    ? 'bg-primary'
+                                    : 'bg-warning'
+                                }`}
                               style={{ width: `${adherencePercentage}%` }}
                             />
                           </div>
@@ -264,7 +266,7 @@ export default function CaregiverDashboardClient({
                       >
                         Unlink
                       </Button>
-                      
+
                       <Link href={`/caregiver/${patient._id}`} passHref legacyBehavior>
                         <Button
                           as="a"

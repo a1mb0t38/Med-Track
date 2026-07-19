@@ -14,7 +14,7 @@ interface CaregiverInfo {
 
 interface Invite {
   _id: string;
-  caregiverId: CaregiverInfo;
+  caregiverId: CaregiverInfo | null;
   status: 'pending';
 }
 
@@ -37,7 +37,6 @@ export default function InviteBanner({ initialInvites }: InviteBannerProps) {
 
       if (res.success) {
         toast.success(`Invitation ${action === 'accept' ? 'accepted' : 'declined'} successfully!`);
-        // Remove from list
         setInvites((prev) => prev.filter((inv) => inv._id !== inviteId));
         router.refresh();
       } else {
@@ -51,13 +50,17 @@ export default function InviteBanner({ initialInvites }: InviteBannerProps) {
     }
   };
 
-  if (invites.length === 0) return null;
+  // Filter out any invites with a broken/null caregiver reference
+  // so a dangling DB record can't crash the whole dashboard.
+  const validInvites = invites.filter((invite) => invite.caregiverId !== null);
+
+  if (validInvites.length === 0) return null;
 
   return (
     <div className="flex flex-col gap-3 mb-6">
-      {invites.map((invite) => (
-        <Card 
-          key={invite._id} 
+      {validInvites.map((invite) => (
+        <Card
+          key={invite._id}
           className="border border-primary-200 dark:border-primary-900 bg-primary-50/50 dark:bg-primary-950/10 shadow-sm"
         >
           <CardContent className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -72,7 +75,10 @@ export default function InviteBanner({ initialInvites }: InviteBannerProps) {
                   Caregiver Connection Request
                 </h4>
                 <p className="text-sm text-slate-600 dark:text-slate-400 mt-0.5">
-                  <span className="font-semibold text-primary-600 dark:text-primary-400">{invite.caregiverId.name}</span> ({invite.caregiverId.email}) wants to link accounts to view your medication adherence.
+                  <span className="font-semibold text-primary-600 dark:text-primary-400">
+                    {invite.caregiverId!.name}
+                  </span>{' '}
+                  ({invite.caregiverId!.email}) wants to link accounts to view your medication adherence.
                 </p>
               </div>
             </div>

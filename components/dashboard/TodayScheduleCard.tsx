@@ -38,7 +38,7 @@ export default function TodayScheduleCard({ initialDoses, readOnly = false }: To
 
   const handleUpdateStatus = async (id: string, status: 'taken' | 'skipped') => {
     // Optimistic UI update
-    setDoses((prev) => 
+    setDoses((prev) =>
       prev.map((dose) => (dose._id === id ? { ...dose, status } : dose))
     );
 
@@ -54,9 +54,9 @@ export default function TodayScheduleCard({ initialDoses, readOnly = false }: To
       } else {
         throw new Error(res.message);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to update dose status', error);
-      toast.error('Failed to update dose status');
+      toast.error(error.message || 'Failed to update dose status');
       // Revert optimistic update on failure by resetting to initial state
       // A more robust approach might refetch, but this is okay for now
       setDoses(initialDoses);
@@ -88,11 +88,10 @@ export default function TodayScheduleCard({ initialDoses, readOnly = false }: To
             const isOverdue = dose.status === 'pending' && isPast(scheduledDate) && differenceInMinutes(new Date(), scheduledDate) > 30;
 
             return (
-              <Card 
-                key={dose._id} 
-                className={`shadow-sm border transition-all ${
-                  isOverdue ? 'border-l-4 border-l-danger-500 border-default-200' : 'border-default-200'
-                }`}
+              <Card
+                key={dose._id}
+                className={`shadow-sm border transition-all ${isOverdue ? 'border-l-4 border-l-danger-500 border-default-200' : 'border-default-200'
+                  }`}
               >
                 <CardContent className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div className="flex flex-col">
@@ -121,17 +120,17 @@ export default function TodayScheduleCard({ initialDoses, readOnly = false }: To
                         </Chip>
                       ) : (
                         <>
-                          <Button 
-                            size="sm" 
-                            variant="flat" 
+                          <Button
+                            size="sm"
+                            variant="flat"
                             className="bg-slate-200 text-slate-700 font-medium"
                             onPress={() => handleUpdateStatus(dose._id, 'skipped')}
                           >
                             Skip
                           </Button>
-                          <Button 
-                            size="sm" 
-                            color="success" 
+                          <Button
+                            size="sm"
+                            color="success"
                             className="font-medium text-white"
                             onPress={() => handleUpdateStatus(dose._id, 'taken')}
                           >
@@ -140,11 +139,11 @@ export default function TodayScheduleCard({ initialDoses, readOnly = false }: To
                         </>
                       )
                     ) : (
-                      <Chip 
+                      <Chip
                         color={
-                          dose.status === 'taken' ? 'success' : 
-                          dose.status === 'missed' ? 'danger' : 'default'
-                        } 
+                          dose.status === 'taken' ? 'success' :
+                            dose.status === 'missed' ? 'danger' : 'default'
+                        }
                         variant="dot"
                         className="capitalize"
                       >
