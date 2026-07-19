@@ -2,15 +2,15 @@
 
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, Button, Chip } from '@heroui/react';
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  Legend, 
-  ResponsiveContainer 
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer
 } from 'recharts';
 import { fetchClient } from '@/lib/api';
 import { format, parseISO, subDays } from 'date-fns';
@@ -42,7 +42,6 @@ export default function AdherenceDashboard({ patientId }: { patientId?: string }
   const [history, setHistory] = useState<DoseHistoryItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Stats
   const [adherenceRate, setAdherenceRate] = useState(0);
   const [currentStreak, setCurrentStreak] = useState(0);
   const [totalLogged, setTotalLogged] = useState(0);
@@ -52,7 +51,6 @@ export default function AdherenceDashboard({ patientId }: { patientId?: string }
       setIsLoading(true);
       try {
         if (patientId) {
-          // Caregiver fetches patient details (today + 30d adherence) in one call
           const res = await fetchClient(`/links/patients/${patientId}/doses`);
           if (res.success && res.data) {
             const sortedAgg = (res.data.adherenceHistory as AggregationData[]).sort((a, b) => a._id.localeCompare(b._id));
@@ -61,12 +59,14 @@ export default function AdherenceDashboard({ patientId }: { patientId?: string }
             setHistory([]);
           }
         } else {
-          const endDate = new Date();
+          // Use end-of-today instead of "this exact moment" so doses scheduled
+          // later today (even if already actioned early) are still included.
+          const now = new Date();
+          const endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
           const startDate = subDays(endDate, range);
-          
+
           const qParams = `?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`;
 
-          // Fetch Aggregation
           const aggRes = await fetchClient(`/doses/adherence${qParams}`);
           if (aggRes.success) {
             const sortedAgg = (aggRes.data as AggregationData[]).sort((a, b) => a._id.localeCompare(b._id));
@@ -74,7 +74,6 @@ export default function AdherenceDashboard({ patientId }: { patientId?: string }
             calculateStats(sortedAgg);
           }
 
-          // Fetch Detail History
           const histRes = await fetchClient(`/doses/history${qParams}`);
           if (histRes.success) {
             setHistory(histRes.data);
@@ -95,7 +94,6 @@ export default function AdherenceDashboard({ patientId }: { patientId?: string }
     let resolvableTotal = 0;
     let streak = 0;
 
-    // Calculate overall stats
     data.forEach(day => {
       takenCount += day.taken;
       resolvableTotal += (day.total - day.pending);
@@ -105,7 +103,6 @@ export default function AdherenceDashboard({ patientId }: { patientId?: string }
     setAdherenceRate(rate);
     setTotalLogged(resolvableTotal);
 
-    // Calculate streak (going backwards from most recent day)
     const reversedData = [...data].reverse();
     for (const day of reversedData) {
       const dayResolvable = day.total - day.pending;
@@ -113,20 +110,19 @@ export default function AdherenceDashboard({ patientId }: { patientId?: string }
         if (day.taken === dayResolvable) {
           streak++;
         } else {
-          break; // Streak broken
+          break;
         }
       }
-      // If dayResolvable === 0, we just skip it, doesn't break or increment streak
     }
     setCurrentStreak(streak);
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status: string): 'success' | 'warning' | 'danger' | 'secondary' => {
     switch (status) {
       case 'taken': return 'success';
       case 'skipped': return 'warning';
       case 'missed': return 'danger';
-      default: return 'default';
+      default: return 'secondary';
     }
   };
 
@@ -139,10 +135,11 @@ export default function AdherenceDashboard({ patientId }: { patientId?: string }
             <Button
               key={r}
               size="sm"
-              variant={range === r ? 'solid' : 'light'}
-              color={range === r ? 'primary' : 'default'}
+              className={`font-medium ${range === r
+                  ? 'bg-primary-600 text-white'
+                  : 'text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700'
+                }`}
               onPress={() => setRange(r as RangeOption)}
-              className="font-medium"
             >
               Last {r} Days
             </Button>
@@ -187,20 +184,20 @@ export default function AdherenceDashboard({ patientId }: { patientId?: string }
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={aggregation} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                  <XAxis 
-                    dataKey="_id" 
+                  <XAxis
+                    dataKey="_id"
                     tickFormatter={(val) => format(parseISO(val), 'MMM d')}
                     axisLine={false}
                     tickLine={false}
                     tick={{ fontSize: 12, fill: '#64748b' }}
                     dy={10}
                   />
-                  <YAxis 
+                  <YAxis
                     axisLine={false}
                     tickLine={false}
                     tick={{ fontSize: 12, fill: '#64748b' }}
                   />
-                  <Tooltip 
+                  <Tooltip
                     cursor={{ fill: '#f1f5f9' }}
                     contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                   />
@@ -238,10 +235,9 @@ export default function AdherenceDashboard({ patientId }: { patientId?: string }
                         {format(parseISO(log.scheduledTime), 'MMM d, yyyy \u2022 h:mm a')}
                       </span>
                     </div>
-                    <Chip 
-                      size="sm" 
-                      color={getStatusColor(log.status)} 
-                      variant="flat"
+                    <Chip
+                      size="sm"
+                      color={getStatusColor(log.status)}
                       className="capitalize"
                     >
                       {log.status}

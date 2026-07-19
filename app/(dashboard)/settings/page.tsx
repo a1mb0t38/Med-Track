@@ -10,7 +10,6 @@ export default function SettingsPage() {
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    // Load preference from local storage
     const stored = localStorage.getItem('medtrack_notifications_enabled');
     if (stored === 'true') {
       setNotificationsEnabled(true);
@@ -20,14 +19,11 @@ export default function SettingsPage() {
 
   const handleToggle = async (isSelected: boolean) => {
     if (isSelected) {
-      // Request permissions
       const granted = await requestNotificationPermission();
       if (granted) {
         setNotificationsEnabled(true);
         localStorage.setItem('medtrack_notifications_enabled', 'true');
         toast.success('Notifications enabled');
-        
-        // Dispatch event to force NotificationManager to re-schedule
         window.dispatchEvent(new Event('dose-updated'));
       } else {
         toast.error('Notification permission denied by the browser');
@@ -38,8 +34,6 @@ export default function SettingsPage() {
       setNotificationsEnabled(false);
       localStorage.setItem('medtrack_notifications_enabled', 'false');
       toast.success('Notifications disabled');
-      
-      // Dispatch event so NotificationManager clears timeouts
       window.dispatchEvent(new Event('dose-updated'));
     }
   };
@@ -61,19 +55,22 @@ export default function SettingsPage() {
                 Dose Reminders
               </h3>
               <p className="text-sm text-slate-500 max-w-lg mt-1">
-                Receive browser notifications when it's time to take your medicine. 
-                <br/><br/>
+                Receive browser notifications when it's time to take your medicine.
+                <br /><br />
                 <span className="text-xs text-amber-600 dark:text-amber-400 font-medium">
-                  Note: MedTrack must be open in a browser tab for reminders to trigger. 
+                  Note: MedTrack must be open in a browser tab for reminders to trigger.
                   If you completely close the browser or tab, you will not receive alerts.
                 </span>
               </p>
             </div>
-            <Switch 
-              isSelected={notificationsEnabled} 
-              onValueChange={handleToggle}
-              color="primary"
-            />
+            <Switch
+              isSelected={notificationsEnabled}
+              onChange={handleToggle}
+            >
+              <Switch.Control>
+                <Switch.Thumb />
+              </Switch.Control>
+            </Switch>
           </div>
         </CardContent>
       </Card>

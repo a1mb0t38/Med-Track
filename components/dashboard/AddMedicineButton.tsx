@@ -113,7 +113,7 @@ export default function AddMedicineButton() {
 
   return (
     <Modal state={state}>
-      <Button color="primary" className="font-semibold shadow-md" onPress={state.open}>
+      <Button className="font-semibold shadow-md bg-primary-600 text-white hover:bg-primary-700" onPress={state.open}>
         + Add Medicine
       </Button>
 
@@ -242,11 +242,18 @@ export default function AddMedicineButton() {
               </Modal.Body>
 
               <Modal.Footer>
-                <Button color="danger" variant="flat" onPress={() => state.close()}>
+                <Button
+                  className="font-medium bg-danger-50 text-danger-700 hover:bg-danger-100"
+                  onPress={() => state.close()}
+                >
                   Cancel
                 </Button>
-                <Button color="primary" type="submit" isLoading={isLoading}>
-                  Add Medicine
+                <Button
+                  className="font-semibold bg-primary-600 text-white hover:bg-primary-700 disabled:opacity-60"
+                  type="submit"
+                  isDisabled={isLoading}
+                >
+                  {isLoading ? 'Adding…' : 'Add Medicine'}
                 </Button>
               </Modal.Footer>
             </form>

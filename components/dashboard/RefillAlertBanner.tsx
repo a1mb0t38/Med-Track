@@ -32,7 +32,7 @@ export default function RefillAlertBanner() {
         setLoading(false);
       }
     };
-    
+
     checkRefills();
   }, []);
 
@@ -54,12 +54,10 @@ export default function RefillAlertBanner() {
             </span>
           </p>
         </div>
-        <Button 
-          size="sm" 
-          variant="light" 
-          color="warning" 
+        <Button
+          size="sm"
+          className="ml-4 text-amber-800 hover:bg-amber-100 dark:text-amber-300 dark:hover:bg-amber-900/40"
           onPress={() => setIsVisible(false)}
-          className="ml-4"
         >
           Dismiss
         </Button>

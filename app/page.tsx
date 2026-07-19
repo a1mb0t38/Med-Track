@@ -14,9 +14,6 @@ import {
   ArrowRight,
 } from "lucide-react";
 
-// If your project already has a shared auth hook (e.g. useCurrentUser from
-// Better Auth's client), replace this local check with that hook instead.
-// This inline version keeps the file self-contained and safe to drop in.
 import { authClient } from "@/lib/auth-client";
 
 export default function HomePage() {
@@ -46,8 +43,6 @@ export default function HomePage() {
     };
   }, [router]);
 
-  // Avoid flashing the landing page for a split second before redirecting
-  // a logged-in user to their dashboard.
   if (checkingSession) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-neutral-50">
@@ -82,12 +77,12 @@ export default function HomePage() {
           </nav>
           <div className="flex items-center gap-3">
             <Link href="/login">
-              <Button variant="light" radius="lg" className="font-medium">
+              <Button className="font-medium rounded-lg text-neutral-700 hover:bg-neutral-100">
                 Log in
               </Button>
             </Link>
             <Link href="/signup">
-              <Button radius="lg" className="bg-primary font-medium text-white">
+              <Button className="rounded-lg bg-primary font-medium text-white hover:bg-primary/90">
                 Sign up
               </Button>
             </Link>
@@ -118,19 +113,16 @@ export default function HomePage() {
           <Link href="/signup">
             <Button
               size="lg"
-              radius="lg"
-              className="bg-primary px-8 font-semibold text-white"
-              endContent={<ArrowRight size={18} />}
+              className="rounded-lg bg-primary px-8 font-semibold text-white hover:bg-primary/90"
             >
               Get started free
+              <ArrowRight size={18} className="ml-2 inline" />
             </Button>
           </Link>
           <Link href="/login">
             <Button
               size="lg"
-              radius="lg"
-              variant="bordered"
-              className="border-neutral-300 px-8 font-semibold text-neutral-700"
+              className="rounded-lg border border-neutral-300 px-8 font-semibold text-neutral-700 hover:bg-neutral-50"
             >
               I already have an account
             </Button>
@@ -162,8 +154,8 @@ export default function HomePage() {
                 </p>
                 <span
                   className={`mt-2 inline-block rounded-full px-2 py-0.5 text-xs font-medium ${dose.tone === "accent"
-                      ? "bg-accent/10 text-accent"
-                      : "bg-warning/10 text-warning"
+                    ? "bg-accent/10 text-accent"
+                    : "bg-warning/10 text-warning"
                     }`}
                 >
                   {dose.tone === "accent" ? "Taken" : "Due soon"}
@@ -253,8 +245,7 @@ export default function HomePage() {
             </p>
             <Link href="/signup">
               <Button
-                radius="lg"
-                className="mt-2 bg-primary px-8 font-semibold text-white"
+                className="mt-2 rounded-lg bg-primary px-8 font-semibold text-white hover:bg-primary/90"
               >
                 Create a free account
               </Button>

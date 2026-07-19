@@ -66,8 +66,6 @@ export default function CaregiverDashboardClient({
 
       if (res.success) {
         toast.success(res.message || 'Invitation sent successfully!');
-
-        // Append the new invite to list
         const newInvite: SentInviteLink = res.data;
         setInvites((prev) => [newInvite, ...prev]);
         setEmail('');
@@ -113,15 +111,12 @@ export default function CaregiverDashboardClient({
 
   return (
     <div className="flex flex-col gap-10">
-      {/* Top Title Section */}
       <div>
         <h1 className="text-3xl font-bold text-slate-800 dark:text-slate-100">Caregiver Dashboard</h1>
         <p className="text-slate-500 mt-1">Manage and track your linked patients' medication adherence.</p>
       </div>
 
-      {/* Invite and Pending Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Invite Form */}
         <Card className="lg:col-span-1 border border-slate-200 dark:border-slate-850 shadow-sm h-fit">
           <CardHeader className="px-6 pt-6 pb-2">
             <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100">Invite Patient</h2>
@@ -144,17 +139,15 @@ export default function CaregiverDashboardClient({
               </TextField>
               <Button
                 type="submit"
-                color="primary"
-                className="font-semibold w-full mt-2"
-                isLoading={isInviting}
+                className="font-semibold w-full mt-2 bg-primary-600 text-white hover:bg-primary-700 disabled:opacity-60"
+                isDisabled={isInviting}
               >
-                Send Invite
+                {isInviting ? 'Sending…' : 'Send Invite'}
               </Button>
             </form>
           </CardContent>
         </Card>
 
-        {/* Pending Invites List */}
         <Card className="lg:col-span-2 border border-slate-200 dark:border-slate-850 shadow-sm">
           <CardHeader className="px-6 pt-6 pb-2">
             <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100">Pending Sent Invites</h2>
@@ -178,14 +171,11 @@ export default function CaregiverDashboardClient({
                       </span>
                     </div>
                     <Button
-                      size="sm"
-                      variant="light"
-                      color="danger"
-                      className="font-medium"
-                      isLoading={isProcessingId === invite._id}
+                      className="font-medium text-danger-600 hover:bg-danger-50 disabled:opacity-60"
+                      isDisabled={isProcessingId === invite._id}
                       onPress={() => handleUnlink(invite._id, true)}
                     >
-                      Revoke
+                      {isProcessingId === invite._id ? 'Revoking…' : 'Revoke'}
                     </Button>
                   </div>
                 ))}
@@ -195,7 +185,6 @@ export default function CaregiverDashboardClient({
         </Card>
       </div>
 
-      {/* Linked Patients List */}
       <div>
         <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-6">Linked Patients</h2>
 
@@ -257,23 +246,15 @@ export default function CaregiverDashboardClient({
 
                     <div className="flex items-center justify-between mt-6 pt-4 border-t border-slate-100 dark:border-slate-800/80">
                       <Button
-                        size="sm"
-                        variant="light"
-                        color="danger"
-                        className="font-medium"
-                        isLoading={isProcessingId === link._id}
+                        className="font-medium text-danger-600 hover:bg-danger-50 disabled:opacity-60"
+                        isDisabled={isProcessingId === link._id}
                         onPress={() => handleUnlink(link._id, false)}
                       >
-                        Unlink
+                        {isProcessingId === link._id ? 'Unlinking…' : 'Unlink'}
                       </Button>
 
-                      <Link href={`/caregiver/${patient._id}`} passHref legacyBehavior>
-                        <Button
-                          as="a"
-                          size="sm"
-                          color="primary"
-                          className="font-semibold px-4"
-                        >
+                      <Link href={`/caregiver/${patient._id}`}>
+                        <Button className="font-semibold px-4 bg-primary-600 text-white hover:bg-primary-700">
                           View Details
                         </Button>
                       </Link>

@@ -35,9 +35,10 @@ const getTimeOfDay = (dateStr: string): TimeOfDay => {
 
 export default function TodayScheduleCard({ initialDoses, readOnly = false }: TodayScheduleCardProps) {
   const [doses, setDoses] = useState<Dose[]>(initialDoses);
+  const [processingId, setProcessingId] = useState<string | null>(null);
 
   const handleUpdateStatus = async (id: string, status: 'taken' | 'skipped') => {
-    // Optimistic UI update
+    setProcessingId(id);
     setDoses((prev) =>
       prev.map((dose) => (dose._id === id ? { ...dose, status } : dose))
     );
@@ -57,9 +58,9 @@ export default function TodayScheduleCard({ initialDoses, readOnly = false }: To
     } catch (error: any) {
       console.error('Failed to update dose status', error);
       toast.error(error.message || 'Failed to update dose status');
-      // Revert optimistic update on failure by resetting to initial state
-      // A more robust approach might refetch, but this is okay for now
       setDoses(initialDoses);
+    } finally {
+      setProcessingId(null);
     }
   };
 
@@ -100,7 +101,7 @@ export default function TodayScheduleCard({ initialDoses, readOnly = false }: To
                         {dose.medicineId.name}
                       </span>
                       {isOverdue && (
-                        <Chip size="sm" color="danger" variant="flat">Overdue</Chip>
+                        <Chip size="sm" color="danger">Overdue</Chip>
                       )}
                     </div>
                     <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 mt-1">
@@ -115,26 +116,26 @@ export default function TodayScheduleCard({ initialDoses, readOnly = false }: To
                   <div className="flex items-center gap-2 self-end sm:self-auto">
                     {dose.status === 'pending' ? (
                       readOnly ? (
-                        <Chip size="sm" variant="flat" className="bg-slate-100 text-slate-500">
+                        <Chip size="sm" className="bg-slate-100 text-slate-500">
                           Pending
                         </Chip>
                       ) : (
                         <>
                           <Button
                             size="sm"
-                            variant="flat"
-                            className="bg-slate-200 text-slate-700 font-medium"
+                            className="bg-slate-200 text-slate-700 font-medium disabled:opacity-60"
+                            isDisabled={processingId === dose._id}
                             onPress={() => handleUpdateStatus(dose._id, 'skipped')}
                           >
                             Skip
                           </Button>
                           <Button
                             size="sm"
-                            color="success"
-                            className="font-medium text-white"
+                            className="font-medium text-white bg-success-600 hover:bg-success-700 disabled:opacity-60"
+                            isDisabled={processingId === dose._id}
                             onPress={() => handleUpdateStatus(dose._id, 'taken')}
                           >
-                            Mark Taken
+                            {processingId === dose._id ? 'Marking…' : 'Mark Taken'}
                           </Button>
                         </>
                       )
@@ -142,9 +143,8 @@ export default function TodayScheduleCard({ initialDoses, readOnly = false }: To
                       <Chip
                         color={
                           dose.status === 'taken' ? 'success' :
-                            dose.status === 'missed' ? 'danger' : 'default'
+                            dose.status === 'missed' ? 'danger' : 'secondary'
                         }
-                        variant="dot"
                         className="capitalize"
                       >
                         {dose.status}

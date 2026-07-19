@@ -50,8 +50,6 @@ export default function InviteBanner({ initialInvites }: InviteBannerProps) {
     }
   };
 
-  // Filter out any invites with a broken/null caregiver reference
-  // so a dangling DB record can't crash the whole dashboard.
   const validInvites = invites.filter((invite) => invite.caregiverId !== null);
 
   if (validInvites.length === 0) return null;
@@ -85,24 +83,18 @@ export default function InviteBanner({ initialInvites }: InviteBannerProps) {
 
             <div className="flex items-center gap-2 self-end sm:self-auto">
               <Button
-                size="sm"
-                variant="light"
-                color="danger"
-                className="font-medium"
+                className="font-medium bg-danger-50 text-danger-700 hover:bg-danger-100"
                 isDisabled={isProcessing !== null}
                 onPress={() => handleRespond(invite._id, 'decline')}
               >
                 Decline
               </Button>
               <Button
-                size="sm"
-                color="primary"
-                className="font-medium px-4"
-                isLoading={isProcessing === invite._id}
+                className="font-medium px-4 bg-primary-600 text-white hover:bg-primary-700 disabled:opacity-60"
                 isDisabled={isProcessing !== null}
                 onPress={() => handleRespond(invite._id, 'accept')}
               >
-                Accept
+                {isProcessing === invite._id ? 'Accepting…' : 'Accept'}
               </Button>
             </div>
           </CardContent>

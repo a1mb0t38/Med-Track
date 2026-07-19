@@ -4,7 +4,7 @@ import React, { use, useState, useEffect } from 'react';
 import { fetchClient } from '@/lib/api';
 import TodayScheduleCard, { Dose } from '@/components/dashboard/TodayScheduleCard';
 import AdherenceDashboard from '@/components/history/AdherenceDashboard';
-import { Card, CardContent, Button, Spinner } from '@heroui/react';
+import { Card, CardContent, Button } from '@heroui/react';
 import Link from 'next/link';
 
 interface PatientDetailsPageProps {
@@ -41,7 +41,6 @@ export default function PatientDetailsPage({ params }: PatientDetailsPageProps) 
       } catch (error: any) {
         console.error('Error fetching patient details:', error);
         const msg = error.message || '';
-        // If forbidden or 403
         if (msg.toLowerCase().includes('forbidden') || msg.toLowerCase().includes('unauthorized') || msg.includes('403') || msg.toLowerCase().includes('access')) {
           setHasAccess(false);
         } else {
@@ -58,7 +57,10 @@ export default function PatientDetailsPage({ params }: PatientDetailsPageProps) 
   if (isLoading) {
     return (
       <div className="flex min-h-[400px] items-center justify-center">
-        <Spinner size="lg" label="Loading patient details..." />
+        <div className="flex flex-col items-center gap-3">
+          <div className="h-8 w-8 rounded-full border-2 border-primary-600 border-t-transparent animate-spin" />
+          <p className="text-sm text-slate-500">Loading patient details...</p>
+        </div>
       </div>
     );
   }
@@ -77,8 +79,8 @@ export default function PatientDetailsPage({ params }: PatientDetailsPageProps) 
             <p className="text-slate-600 dark:text-slate-400 max-w-md">
               You don't have access to this patient's data.
             </p>
-            <Link href="/caregiver" passHref legacyBehavior>
-              <Button as="a" color="primary" className="mt-2 font-semibold">
+            <Link href="/caregiver">
+              <Button className="mt-2 font-semibold bg-primary-600 text-white hover:bg-primary-700">
                 Back to Dashboard
               </Button>
             </Link>
@@ -95,8 +97,8 @@ export default function PatientDetailsPage({ params }: PatientDetailsPageProps) 
           <CardContent className="p-8 text-center flex flex-col items-center gap-4">
             <h2 className="text-xl font-bold text-slate-800 dark:text-slate-200">Error Loading Data</h2>
             <p className="text-slate-600 dark:text-slate-400 max-w-md">{errorMessage}</p>
-            <Link href="/caregiver" passHref legacyBehavior>
-              <Button as="a" color="primary" className="font-semibold">
+            <Link href="/caregiver">
+              <Button className="font-semibold bg-primary-600 text-white hover:bg-primary-700">
                 Back to Dashboard
               </Button>
             </Link>
@@ -108,7 +110,6 @@ export default function PatientDetailsPage({ params }: PatientDetailsPageProps) 
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 flex flex-col gap-8">
-      {/* Back button and title */}
       <div>
         <Link href="/caregiver" className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline font-semibold mb-4">
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -122,7 +123,6 @@ export default function PatientDetailsPage({ params }: PatientDetailsPageProps) 
         <p className="text-slate-500 mt-1">Viewing schedule and history for {patient?.email}.</p>
       </div>
 
-      {/* Today's Schedule Card (Read Only) */}
       <div>
         <h2 className="text-xl font-bold text-slate-850 dark:text-slate-100 mb-4">Today's Schedule</h2>
         <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-6">
@@ -130,7 +130,6 @@ export default function PatientDetailsPage({ params }: PatientDetailsPageProps) 
         </div>
       </div>
 
-      {/* Adherence Chart Adaptation */}
       <div>
         <h2 className="text-xl font-bold text-slate-850 dark:text-slate-100 mb-4">Adherence Progress</h2>
         <AdherenceDashboard patientId={patientId} />
