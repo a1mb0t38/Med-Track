@@ -143,7 +143,7 @@ export default function TodayScheduleCard({ initialDoses, readOnly = false }: To
                       <Chip
                         color={
                           dose.status === 'taken' ? 'success' :
-                            dose.status === 'missed' ? 'danger' : 'secondary'
+                            dose.status === 'missed' ? 'danger' : 'default'
                         }
                         className="capitalize"
                       >

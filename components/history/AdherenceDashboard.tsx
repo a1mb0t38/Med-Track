@@ -117,12 +117,12 @@ export default function AdherenceDashboard({ patientId }: { patientId?: string }
     setCurrentStreak(streak);
   };
 
-  const getStatusColor = (status: string): 'success' | 'warning' | 'danger' | 'secondary' => {
+  const getStatusColor = (status: string): 'success' | 'warning' | 'danger' | 'default' => {
     switch (status) {
       case 'taken': return 'success';
       case 'skipped': return 'warning';
       case 'missed': return 'danger';
-      default: return 'secondary';
+      default: return 'default';
     }
   };
 
@@ -136,8 +136,8 @@ export default function AdherenceDashboard({ patientId }: { patientId?: string }
               key={r}
               size="sm"
               className={`font-medium ${range === r
-                  ? 'bg-primary-600 text-white'
-                  : 'text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700'
+                ? 'bg-primary-600 text-white'
+                : 'text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700'
                 }`}
               onPress={() => setRange(r as RangeOption)}
             >
