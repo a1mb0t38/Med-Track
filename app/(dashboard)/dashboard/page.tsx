@@ -5,7 +5,7 @@ import RefillAlertBanner from '@/components/dashboard/RefillAlertBanner';
 import AddMedicineButton from '@/components/dashboard/AddMedicineButton';
 import InviteBanner from '@/components/dashboard/InviteBanner';
 import { Dose } from '@/components/dashboard/TodayScheduleCard';
-import { auth } from '@/lib/auth';
+
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 
@@ -17,7 +17,7 @@ export default async function DashboardPage() {
   //   headers: await headers(),
   // });
 
-  const session = fetchServer('/user/profile');
+  const session = await fetchServer('/user/profile');
 
   if (!session) {
     redirect('/login');

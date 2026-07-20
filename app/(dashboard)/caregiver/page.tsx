@@ -1,5 +1,5 @@
 import React from 'react';
-import { auth } from '@/lib/auth';
+
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { fetchServer } from '@/lib/api-server';
@@ -17,7 +17,7 @@ export default async function CaregiverPage() {
   //   headers: await headers(),
   // });
 
-  const session = fetchServer('/user/profile');
+  const session = await fetchServer('/user/profile');
 
   if (!session) {
     redirect('/login');
