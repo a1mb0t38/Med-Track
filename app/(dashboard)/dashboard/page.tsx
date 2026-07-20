@@ -11,7 +11,7 @@ export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
 
 export default async function DashboardPage() {
-  let session: any = null;
+  let session = null;
 
   try {
     session = await fetchServer('/user/profile');

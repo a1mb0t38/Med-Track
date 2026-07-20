@@ -11,7 +11,7 @@ export const metadata = {
 };
 
 export default async function CaregiverPage() {
-  let session: any = null;
+  let session = null;
 
   try {
     session = await fetchServer('/user/profile');
