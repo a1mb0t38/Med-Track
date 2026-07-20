@@ -13,9 +13,11 @@ export const metadata = {
 };
 
 export default async function CaregiverPage() {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  // const session = await auth.api.getSession({
+  //   headers: await headers(),
+  // });
+
+  const session = fetchServer('/user/profile');
 
   if (!session) {
     redirect('/login');

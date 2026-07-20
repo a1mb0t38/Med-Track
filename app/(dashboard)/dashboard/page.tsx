@@ -13,9 +13,11 @@ export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
 
 export default async function DashboardPage() {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  // const session = await auth.api.getSession({
+  //   headers: await headers(),
+  // });
+
+  const session = fetchServer('/user/profile');
 
   if (!session) {
     redirect('/login');

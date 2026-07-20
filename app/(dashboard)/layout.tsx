@@ -4,15 +4,18 @@ import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import NotificationManager from '@/components/NotificationManager';
 import Header from '@/components/dashboard/Header';
+import { fetchServer } from '@/lib/api-server';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
 }
 
 export default async function DashboardLayout({ children }: DashboardLayoutProps) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  // const session = await auth.api.getSession({
+  //   headers: await headers(),
+  // });
+
+  const session = fetchServer('/user/profile');
 
   if (!session) {
     redirect('/login');
