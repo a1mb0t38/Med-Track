@@ -11,11 +11,12 @@ export const metadata = {
 };
 
 export default async function CaregiverPage() {
-  let session;
+  let session: any = null;
+
   try {
     session = await fetchServer('/user/profile');
   } catch (error) {
-    redirect('/login');
+    session = null;
   }
 
   if (!session?.success || !session?.user) {

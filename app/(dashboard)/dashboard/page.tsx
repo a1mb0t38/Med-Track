@@ -11,13 +11,16 @@ export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
 
 export default async function DashboardPage() {
-  let session;
+  let session: any = null;
+
   try {
     session = await fetchServer('/user/profile');
   } catch (error) {
-    redirect('/login');
+    session = null;
   }
 
+  // redirect() is called OUTSIDE any try/catch, so it can never be
+  // accidentally swallowed by an error handler.
   if (!session?.success || !session?.user) {
     redirect('/login');
   }
