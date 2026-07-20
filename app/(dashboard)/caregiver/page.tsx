@@ -1,6 +1,4 @@
 import React from 'react';
-
-import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { fetchServer } from '@/lib/api-server';
 import CaregiverDashboardClient from './CaregiverDashboardClient';
@@ -13,13 +11,14 @@ export const metadata = {
 };
 
 export default async function CaregiverPage() {
-  // const session = await auth.api.getSession({
-  //   headers: await headers(),
-  // });
+  let session;
+  try {
+    session = await fetchServer('/user/profile');
+  } catch (error) {
+    redirect('/login');
+  }
 
-  const session = await fetchServer('/user/profile');
-
-  if (!session) {
+  if (!session?.success || !session?.user) {
     redirect('/login');
   }
 
